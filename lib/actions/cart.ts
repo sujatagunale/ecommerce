@@ -1,10 +1,9 @@
 'use server';
 
-import { db } from '@/db';
-import { cartItems, products } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
+
+const mockCartStorage = new Map<string, Array<{ productId: number; quantity: number }>>();
 
 async function getSessionId(): Promise<string> {
   const cookieStore = await cookies();
@@ -26,29 +25,17 @@ async function getSessionId(): Promise<string> {
 export async function addToCart(productId: number, quantity: number = 1) {
   try {
     const sessionId = await getSessionId();
+    const cartItems = mockCartStorage.get(sessionId) || [];
     
-    const existingItem = await db
-      .select()
-      .from(cartItems)
-      .where(and(
-        eq(cartItems.sessionId, sessionId),
-        eq(cartItems.productId, productId)
-      ))
-      .limit(1);
+    const existingItemIndex = cartItems.findIndex(item => item.productId === productId);
     
-    if (existingItem.length > 0) {
-      await db
-        .update(cartItems)
-        .set({ quantity: existingItem[0].quantity + quantity })
-        .where(eq(cartItems.id, existingItem[0].id));
+    if (existingItemIndex >= 0) {
+      cartItems[existingItemIndex].quantity += quantity;
     } else {
-      await db.insert(cartItems).values({
-        sessionId,
-        productId,
-        quantity,
-      });
+      cartItems.push({ productId, quantity });
     }
     
+    mockCartStorage.set(sessionId, cartItems);
     return { success: true };
   } catch (error) {
     console.error('Error adding to cart:', error);
@@ -61,25 +48,20 @@ export async function updateCartItemQuantity(productId: number, quantity: number
     const sessionId = await getSessionId();
     
     if (quantity <= 0) {
-      await db
-        .delete(cartItems)
-        .where(and(
-          eq(cartItems.sessionId, sessionId),
-          eq(cartItems.productId, productId)
-        ));
-    } else {
-      await db
-        .update(cartItems)
-        .set({ quantity })
-        .where(and(
-          eq(cartItems.sessionId, sessionId),
-          eq(cartItems.productId, productId)
-        ));
+      return await removeFromCart(productId);
     }
+
+    const cartItems = mockCartStorage.get(sessionId) || [];
+    const itemIndex = cartItems.findIndex(item => item.productId === productId);
     
+    if (itemIndex >= 0) {
+      cartItems[itemIndex].quantity = quantity;
+      mockCartStorage.set(sessionId, cartItems);
+    }
+
     return { success: true };
   } catch (error) {
-    console.error('Error updating cart item:', error);
+    console.error('Error updating cart item quantity:', error);
     return { success: false, error: 'Failed to update cart item' };
   }
 }
@@ -87,14 +69,11 @@ export async function updateCartItemQuantity(productId: number, quantity: number
 export async function removeFromCart(productId: number) {
   try {
     const sessionId = await getSessionId();
+    const cartItems = mockCartStorage.get(sessionId) || [];
     
-    await db
-      .delete(cartItems)
-      .where(and(
-        eq(cartItems.sessionId, sessionId),
-        eq(cartItems.productId, productId)
-      ));
-    
+    const filteredItems = cartItems.filter(item => item.productId !== productId);
+    mockCartStorage.set(sessionId, filteredItems);
+
     return { success: true };
   } catch (error) {
     console.error('Error removing from cart:', error);
@@ -105,24 +84,19 @@ export async function removeFromCart(productId: number) {
 export async function getCartItems() {
   try {
     const sessionId = await getSessionId();
+    const cartItems = mockCartStorage.get(sessionId) || [];
     
-    const result = await db
-      .select({
-        id: cartItems.id,
-        quantity: cartItems.quantity,
-        product: {
-          id: products.id,
-          name: products.name,
-          slug: products.slug,
-          price: products.price,
-          images: products.images,
-        },
-      })
-      .from(cartItems)
-      .leftJoin(products, eq(cartItems.productId, products.id))
-      .where(eq(cartItems.sessionId, sessionId));
-    
-    return result;
+    return cartItems.map(item => ({
+      id: item.productId,
+      productId: item.productId,
+      quantity: item.quantity,
+      product: {
+        id: item.productId,
+        name: `Product ${item.productId}`,
+        price: '25.00',
+        images: [],
+      },
+    }));
   } catch (error) {
     console.error('Error fetching cart items:', error);
     return [];
@@ -132,13 +106,9 @@ export async function getCartItems() {
 export async function getCartItemCount() {
   try {
     const sessionId = await getSessionId();
+    const cartItems = mockCartStorage.get(sessionId) || [];
     
-    const result = await db
-      .select({ quantity: cartItems.quantity })
-      .from(cartItems)
-      .where(eq(cartItems.sessionId, sessionId));
-    
-    const totalCount = result.reduce((sum, item) => sum + item.quantity, 0);
+    const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     return totalCount;
   } catch (error) {
     console.error('Error fetching cart count:', error);
