@@ -1,4 +1,86 @@
-export default function Home() {
+import { getAllProducts, getAllCategories } from '@/lib/actions/product';
+
+async function CategorySection() {
+  const categories = await getAllCategories();
+  
+  return (
+    <section className="py-8 border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap gap-6">
+            <button className="text-foreground border-b-2 border-accent pb-2 font-medium">All</button>
+            {categories.map((category) => (
+              <button key={category.id} className="text-gray-medium hover:text-foreground transition-colors pb-2">
+                {category.name}
+              </button>
+            ))}
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <select className="border border-gray-300 rounded px-3 py-2 text-sm">
+              <option>Filter</option>
+              <option>Price: Low to High</option>
+              <option>Price: High to Low</option>
+              <option>Newest</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+async function ProductGrid() {
+  const products = await getAllProducts();
+  
+  return (
+    <section className="py-16">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {products.slice(0, 8).map((product) => (
+            <div key={product.id} className="group">
+              <div className="relative bg-gray-light rounded-lg overflow-hidden mb-4">
+                <div className="aspect-square flex items-center justify-center">
+                  <span className="text-gray-500">{product.name}</span>
+                </div>
+                {product.name === 'Frontend Dev Tee' && (
+                  <span className="absolute top-3 left-3 bg-accent text-black text-xs px-2 py-1 rounded">New</span>
+                )}
+                {product.name === 'Code & Coffee Mug' && (
+                  <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded">-15%</span>
+                )}
+                {product.name === 'API Keychain' && (
+                  <span className="absolute top-3 left-3 bg-accent text-black text-xs px-2 py-1 rounded">New</span>
+                )}
+                {product.name === 'Stack Overflow Mug' && (
+                  <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded">-20%</span>
+                )}
+              </div>
+              <h3 className="font-medium mb-2">{product.name}</h3>
+              <p className="text-gray-medium">
+                {product.name === 'Code & Coffee Mug' ? (
+                  <>
+                    <span className="line-through mr-2">$25</span>
+                    <span>${product.price}</span>
+                  </>
+                ) : product.name === 'Stack Overflow Mug' ? (
+                  <>
+                    <span className="line-through mr-2">$30</span>
+                    <span>${product.price}</span>
+                  </>
+                ) : (
+                  `$${product.price}`
+                )}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default async function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       <header className="border-b border-gray-200 py-4">
@@ -69,124 +151,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-8 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex flex-wrap gap-6">
-              <button className="text-foreground border-b-2 border-accent pb-2 font-medium">All</button>
-              <button className="text-gray-medium hover:text-foreground transition-colors pb-2">T-Shirts</button>
-              <button className="text-gray-medium hover:text-foreground transition-colors pb-2">Hoodies</button>
-              <button className="text-gray-medium hover:text-foreground transition-colors pb-2">Stickers</button>
-              <button className="text-gray-medium hover:text-foreground transition-colors pb-2">Mugs</button>
-              <button className="text-gray-medium hover:text-foreground transition-colors pb-2">Accessories</button>
-            </div>
-            
-            <select className="border border-gray-300 rounded px-3 py-2 text-sm">
-              <option>Filter</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-              <option>Newest</option>
-            </select>
-          </div>
-        </div>
-      </section>
+      <CategorySection />
 
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="group">
-              <div className="relative bg-gray-light rounded-lg overflow-hidden mb-4">
-                <div className="aspect-square flex items-center justify-center">
-                  <span className="text-gray-500">Frontend Dev Tee</span>
-                </div>
-                <span className="absolute top-3 left-3 bg-foreground text-background text-xs px-2 py-1 rounded">NEW</span>
-              </div>
-              <h3 className="font-medium mb-2">Frontend Dev Tee</h3>
-              <p className="text-gray-medium">$29</p>
-            </div>
-
-            <div className="group">
-              <div className="relative bg-gray-light rounded-lg overflow-hidden mb-4">
-                <div className="aspect-square flex items-center justify-center">
-                  <span className="text-gray-500">Code & Coffee Mug</span>
-                </div>
-                <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded">-15%</span>
-              </div>
-              <h3 className="font-medium mb-2">Code & Coffee Mug</h3>
-              <p className="text-gray-medium">
-                <span className="line-through mr-2">$25</span>
-                <span>$21</span>
-              </p>
-            </div>
-
-            <div className="group">
-              <div className="relative bg-gray-light rounded-lg overflow-hidden mb-4">
-                <div className="aspect-square flex items-center justify-center">
-                  <span className="text-gray-500">Git Sticker Pack</span>
-                </div>
-              </div>
-              <h3 className="font-medium mb-2">Git Sticker Pack</h3>
-              <p className="text-gray-medium">$12</p>
-            </div>
-
-            <div className="group">
-              <div className="relative bg-gray-light rounded-lg overflow-hidden mb-4">
-                <div className="aspect-square flex items-center justify-center">
-                  <span className="text-gray-500">Debug Hoodie</span>
-                </div>
-                <span className="absolute top-3 left-3 bg-foreground text-background text-xs px-2 py-1 rounded">NEW</span>
-              </div>
-              <h3 className="font-medium mb-2">Debug Hoodie</h3>
-              <p className="text-gray-medium">$65</p>
-            </div>
-
-            <div className="group">
-              <div className="relative bg-gray-light rounded-lg overflow-hidden mb-4">
-                <div className="aspect-square flex items-center justify-center">
-                  <span className="text-gray-500">API Keychain</span>
-                </div>
-              </div>
-              <h3 className="font-medium mb-2">API Keychain</h3>
-              <p className="text-gray-medium">$8</p>
-            </div>
-
-            <div className="group">
-              <div className="relative bg-gray-light rounded-lg overflow-hidden mb-4">
-                <div className="aspect-square flex items-center justify-center">
-                  <span className="text-gray-500">Stack Overflow Mug</span>
-                </div>
-                <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded">-20%</span>
-              </div>
-              <h3 className="font-medium mb-2">Stack Overflow Mug</h3>
-              <p className="text-gray-medium">
-                <span className="line-through mr-2">$30</span>
-                <span>$24</span>
-              </p>
-            </div>
-
-            <div className="group">
-              <div className="relative bg-gray-light rounded-lg overflow-hidden mb-4">
-                <div className="aspect-square flex items-center justify-center">
-                  <span className="text-gray-500">Terminal Stickers</span>
-                </div>
-                <span className="absolute top-3 left-3 bg-foreground text-background text-xs px-2 py-1 rounded">NEW</span>
-              </div>
-              <h3 className="font-medium mb-2">Terminal Stickers</h3>
-              <p className="text-gray-medium">$15</p>
-            </div>
-
-            <div className="group">
-              <div className="relative bg-gray-light rounded-lg overflow-hidden mb-4">
-                <div className="aspect-square flex items-center justify-center">
-                  <span className="text-gray-500">Laptop Stand</span>
-                </div>
-              </div>
-              <h3 className="font-medium mb-2">Laptop Stand</h3>
-              <p className="text-gray-medium">$89</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ProductGrid />
 
       <footer className="bg-gray-light py-16">
         <div className="max-w-7xl mx-auto px-4">
