@@ -1,7 +1,26 @@
 import React from 'react';
 import Link from 'next/link';
+import { getAllProducts } from '@/lib/actions/product';
 
-export default function ProductsPage() {
+async function ProductGrid() {
+  const products = await getAllProducts();
+  
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+      {products.map((product) => (
+        <div key={product.id} className="group cursor-pointer">
+          <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
+            <span className="text-gray-500">{product.name}</span>
+          </div>
+          <h3 className="font-medium mb-1">{product.name}</h3>
+          <p className="text-gray-medium text-sm">US$ {product.price}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default async function ProductsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       <header className="border-b border-gray-200 py-4">
@@ -64,117 +83,7 @@ export default function ProductsPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          <div className="group cursor-pointer">
-            <div className="bg-blue-100 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm">
-                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-            <h3 className="font-medium mb-1">Frontend - Wall Clock</h3>
-            <p className="text-gray-medium text-sm">US$ 45.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-20 h-24 bg-black rounded flex items-center justify-center">
-                <div className="w-4 h-4 bg-white rounded-full"></div>
-              </div>
-            </div>
-            <h3 className="font-medium mb-1">Backend - Dark Roast</h3>
-            <p className="text-gray-medium text-sm">US$ 18.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-black rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-16 h-20 bg-orange-500 rounded-full"></div>
-            </div>
-            <h3 className="font-medium mb-1">Fullstack - Desk Lamp</h3>
-            <p className="text-gray-medium text-sm">US$ 89.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-20 h-16 bg-gray-800 rounded-lg flex items-center justify-center">
-                <div className="w-2 h-8 bg-gray-400 rounded"></div>
-              </div>
-            </div>
-            <h3 className="font-medium mb-1">DevOps - Coffee Kettle</h3>
-            <p className="text-gray-medium text-sm">US$ 125.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-black rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-16 h-20 bg-orange-600 rounded-t-full"></div>
-            </div>
-            <h3 className="font-medium mb-1">API - Desk Organizer</h3>
-            <p className="text-gray-medium text-sm">US$ 32.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-12 h-20 bg-gray-700 rounded-lg"></div>
-            </div>
-            <h3 className="font-medium mb-1">Database - Pen Holder</h3>
-            <p className="text-gray-medium text-sm">US$ 24.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-20 h-12 bg-yellow-400 rounded-full"></div>
-            </div>
-            <h3 className="font-medium mb-1">JavaScript - Desk Light</h3>
-            <p className="text-gray-medium text-sm">US$ 67.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-blue-100 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                <div className="w-2 h-8 bg-gray-800 rounded"></div>
-                <div className="w-2 h-6 bg-gray-800 rounded ml-1"></div>
-                <div className="w-2 h-4 bg-gray-800 rounded ml-1"></div>
-              </div>
-            </div>
-            <h3 className="font-medium mb-1">React - Data Visualizer</h3>
-            <p className="text-gray-medium text-sm">US$ 156.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-16 h-16 bg-gray-800 rounded-full"></div>
-            </div>
-            <h3 className="font-medium mb-1">Node.js - Minimalist Plate</h3>
-            <p className="text-gray-medium text-sm">US$ 28.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-black rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-16 h-20 bg-orange-500 rounded-lg"></div>
-            </div>
-            <h3 className="font-medium mb-1">Python - Code Mug</h3>
-            <p className="text-gray-medium text-sm">US$ 42.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-blue-100 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-20 h-16 bg-gray-700 rounded-lg flex items-center justify-center">
-                <div className="w-8 h-1 bg-white rounded"></div>
-              </div>
-            </div>
-            <h3 className="font-medium mb-1">Git - Branch Organizer</h3>
-            <p className="text-gray-medium text-sm">US$ 38.0</p>
-          </div>
-
-          <div className="group cursor-pointer">
-            <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 aspect-square flex items-center justify-center">
-              <div className="w-12 h-20 bg-black rounded-lg"></div>
-            </div>
-            <h3 className="font-medium mb-1">Terminal - Dark Vase</h3>
-            <p className="text-gray-medium text-sm">US$ 75.0</p>
-          </div>
-        </div>
+        <ProductGrid />
 
         <div className="flex items-center justify-center space-x-4">
           <button className="p-2 text-gray-400 hover:text-foreground transition-colors">
