@@ -5,7 +5,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <nav className="hidden md:flex space-x-8">
             <a href="#" className="text-foreground hover:text-accent transition-colors">Home</a>
-            <a href="#" className="text-foreground hover:text-accent transition-colors">Shop</a>
+            <a href="/products" className="text-foreground hover:text-accent transition-colors">Shop</a>
             <a href="#" className="text-foreground hover:text-accent transition-colors">Categories</a>
             <a href="#" className="text-foreground hover:text-accent transition-colors">Pages</a>
           </nav>
